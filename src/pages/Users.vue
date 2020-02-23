@@ -8,9 +8,9 @@
           <!-- head -->
           <thead>
             <tr>
-              <th @click="sort('name')">Name</th>
-              <th @click="sort('age')">Age</th>
-              <th @click="sort('gender')">Gender</th>
+              <th @click="sort('name')">Name 	&#8595;</th>
+              <th @click="sort('age')">Age 	&#8595;</th>
+              <th @click="sort('gender')">Gender 	&#8595;</th>
             </tr>
           </thead>
 
@@ -26,10 +26,25 @@
             </tr>
           </tbody>
         </table>
-        <p class="debug">debug: sort - {{ currentSort }}, dir - {{ currentSortDir }}</p>
+        <p class="debug">
+          <span>debug: sort - {{ currentSort }}, dir - {{ currentSortDir }}</span> 
+          <br> 
+          <span>page: {{ this.page.current }}, lengt: {{ this.page.length }}</span>
+        </p>
 
       </div>
     </section>
+
+    <!-- buttons -->
+    <section>
+      <div class="container">
+        <div class="button-list">
+          <div class="btn btnPrimary" @click="prevPage">&#8592;</div>
+          <div class="btn btnPrimary" @click="nextPage">&#8594;</div>
+        </div>
+      </div>
+    </section>
+
   </div>
 </template>
  
@@ -42,6 +57,10 @@ import axios from 'axios'
        users: [],
        currentSort: 'name',
        currentSortDir: 'asc',
+       page: {
+         current: 1,
+         length: 3
+       }
      }
    },
    created() {
@@ -62,6 +81,10 @@ import axios from 'axios'
          if (a[this.currentSort] < b[this.currentSort]) return -1 *mod
          if (a[this.currentSort] > b[this.currentSort]) return 1 * mod
          return 0
+       }).filter((row, index) => {
+         let start = (this.page.current - 1)*this.page.length
+         let end = this.page.current * this.page.length
+         if(index >= start && index < end) return true
        })
      }
    },
@@ -71,6 +94,14 @@ import axios from 'axios'
         this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc'
       }
       this.currentSort = e
+     },
+     // Paggination
+     prevPage() {
+       if (this.page.current > 1) this.page.current -= 1
+       
+     },
+     nextPage() {
+       if ((this.page.current * this.page.length) < this.users.length) this.page.current += 1
      }
    }
  }
@@ -85,5 +116,13 @@ import axios from 'axios'
   }
   .debug {
     text-align: center
+  }
+  .button-list {
+    width: 100%;
+    text-align: center;
+    .btn {
+      border-radius: 60px;
+      margin: 0 20px;
+    }
   }
  </style>
